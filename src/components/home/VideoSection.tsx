@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const VideoSection = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
@@ -18,8 +18,9 @@ const VideoSection = () => {
         // Most browsers require user interaction before auto-playing videos with sound
       });
       
-      // Add loop attribute
+      // Add loop and autoplay attributes
       videoRef.current.loop = true;
+      videoRef.current.autoplay = true;
     }
   }, []);
   
@@ -35,8 +36,23 @@ const VideoSection = () => {
   };
   
   return (
-    <section className="py-24 bg-black">
-      <div className="container">
+    <section className="py-24 bg-black relative">
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video 
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          poster="https://images.unsplash.com/photo-1588099768531-a72d4a198538?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          loop
+          muted
+          autoPlay
+        >
+          <source src="https://samplelib.com/lib/preview/mp4/sample-30s.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
+      
+      <div className="container relative z-10">
         <div className="text-center mb-12">
           <h2 className="heading-lg text-white mb-4">Experience Crepdog Crew</h2>
           <p className="text-gray-300 max-w-2xl mx-auto">
@@ -46,32 +62,19 @@ const VideoSection = () => {
         </div>
         
         <div className="relative max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl">
-          <video 
-            ref={videoRef}
-            className="w-full aspect-video"
-            poster="https://images.unsplash.com/photo-1588099768531-a72d4a198538?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-            loop
-            muted
+          <Button
+            onClick={togglePlay}
+            variant="outline"
+            size="icon"
+            className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-white/20 border-white text-white hover:bg-white/30 hover:scale-110 transition-transform duration-200"
+            aria-label={isPlaying ? "Pause video" : "Play video"}
           >
-            <source src="https://samplelib.com/lib/preview/mp4/sample-30s.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-            <Button
-              onClick={togglePlay}
-              variant="outline"
-              size="icon"
-              className="w-16 h-16 rounded-full bg-white/20 border-white text-white hover:bg-white/30 hover:scale-110 transition-transform duration-200"
-              aria-label={isPlaying ? "Pause video" : "Play video"}
-            >
-              {isPlaying ? (
-                <Pause className="h-8 w-8" />
-              ) : (
-                <Play className="h-8 w-8 ml-1" />
-              )}
-            </Button>
-          </div>
+            {isPlaying ? (
+              <Pause className="h-8 w-8" />
+            ) : (
+              <Play className="h-8 w-8 ml-1" />
+            )}
+          </Button>
         </div>
         
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -5,6 +5,7 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock product database - in a real app, this would come from an API
 const productsDatabase = [
@@ -31,8 +32,8 @@ const productsDatabase = [
     description: "The Nike Dunk Low Retro features a classic leather upper with a cushioned collar and rubber outsole for traction. This iconic design has been a staple in sneaker culture since its debut.",
     images: [
       "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      "https://images.unsplash.com/photo-1584735174914-6b1a755a6e1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     ],
     sizes: ["US 7", "US 8", "US 9", "US 10", "US 11"],
     brand: "Nike",
@@ -46,8 +47,8 @@ const productsDatabase = [
     description: "The Supreme Box Logo Tee features the iconic box logo on premium cotton fabric. A streetwear essential known for its cultural impact and collectability.",
     images: [
       "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      "https://images.unsplash.com/photo-1571945153237-4929e783af4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     ],
     sizes: ["S", "M", "L", "XL"],
     brand: "Supreme",
@@ -60,6 +61,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   useEffect(() => {
     // Simulate API call to fetch product data
@@ -119,27 +121,57 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Product Images */}
           <div className="product-images">
-            <Carousel className="w-full">
-              <CarouselContent>
-                {product.images.map((image: string, index: number) => (
-                  <CarouselItem key={index}>
-                    <Card className="border-none">
-                      <CardContent className="p-1">
-                        <img 
-                          src={image} 
-                          alt={`${product.name} - Image ${index + 1}`} 
-                          className="rounded-md aspect-square object-cover w-full"
-                        />
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="hidden md:flex">
-                <CarouselPrevious />
-                <CarouselNext />
-              </div>
-            </Carousel>
+            <div className="mb-4">
+              <img 
+                src={product.images[activeImageIndex]} 
+                alt={`${product.name} - Image ${activeImageIndex + 1}`} 
+                className="w-full rounded-lg aspect-square object-cover"
+              />
+            </div>
+            
+            {/* Thumbnail Navigation */}
+            <div className="grid grid-cols-4 gap-2 mt-4">
+              {product.images.map((image: string, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveImageIndex(index)}
+                  className={`rounded-md overflow-hidden border-2 transition-all ${
+                    activeImageIndex === index ? 'border-black' : 'border-transparent'
+                  }`}
+                >
+                  <img 
+                    src={image} 
+                    alt={`${product.name} - Thumbnail ${index + 1}`} 
+                    className="w-full aspect-square object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Carousel (visible only on mobile) */}
+            <div className="md:hidden mt-4">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {product.images.map((image: string, index: number) => (
+                    <CarouselItem key={index}>
+                      <Card className="border-none">
+                        <CardContent className="p-1">
+                          <img 
+                            src={image} 
+                            alt={`${product.name} - Image ${index + 1}`} 
+                            className="rounded-md aspect-square object-cover w-full"
+                          />
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="flex justify-center mt-2">
+                  <CarouselPrevious className="relative static mx-1 translate-y-0" />
+                  <CarouselNext className="relative static mx-1 translate-y-0" />
+                </div>
+              </Carousel>
+            </div>
           </div>
 
           {/* Product Info */}

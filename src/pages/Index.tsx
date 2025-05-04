@@ -49,9 +49,9 @@ const Index = () => {
   return (
     <Layout>
       <HeroSection />
+      <VideoSection />
       <StatsSection />
       <FeaturedProducts />
-      <VideoSection />
       <CategoriesSection />
       <BrandsSection />
       <LegitCheckSection />
