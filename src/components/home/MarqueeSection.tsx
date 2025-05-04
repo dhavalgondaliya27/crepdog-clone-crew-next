@@ -10,13 +10,23 @@ const brands = [
 const MarqueeSection = () => {
   return (
     <div className="bg-black text-white py-2 overflow-hidden">
-      <div className="flex animate-marquee whitespace-nowrap">
-        {[...brands, ...brands].map((brand, index) => (
-          <React.Fragment key={index}>
-            <span className="text-sm font-medium mx-4">{brand}</span>
-            <span className="mx-4">•</span>
-          </React.Fragment>
-        ))}
+      <div className="whitespace-nowrap flex">
+        <div className="animate-marquee inline-block">
+          {brands.map((brand, index) => (
+            <React.Fragment key={index}>
+              <span className="text-sm font-medium mx-4">{brand}</span>
+              <span className="mx-4">•</span>
+            </React.Fragment>
+          ))}
+        </div>
+        <div className="animate-marquee inline-block">
+          {brands.map((brand, index) => (
+            <React.Fragment key={`duplicate-${index}`}>
+              <span className="text-sm font-medium mx-4">{brand}</span>
+              <span className="mx-4">•</span>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </div>
   );
