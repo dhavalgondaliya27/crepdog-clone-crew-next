@@ -7,6 +7,9 @@ import CategoriesSection from "@/components/home/CategoriesSection";
 import LegitCheckSection from "@/components/home/LegitCheckSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
+import VideoSection from "@/components/home/VideoSection";
+import BrandsSection from "@/components/home/BrandsSection";
+import StatsSection from "@/components/home/StatsSection";
 
 const Index = () => {
   useEffect(() => {
@@ -27,13 +30,30 @@ const Index = () => {
       
       observer.observe(section);
     });
+    
+    // Smooth scroll to sections when navigating
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId && targetId !== '#') {
+          document.querySelector(targetId)?.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
   }, []);
 
   return (
     <Layout>
       <HeroSection />
+      <StatsSection />
       <FeaturedProducts />
+      <VideoSection />
       <CategoriesSection />
+      <BrandsSection />
       <LegitCheckSection />
       <TestimonialsSection />
       <NewsletterSection />
