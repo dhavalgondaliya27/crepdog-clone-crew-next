@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,6 +7,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const VideoSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    // Auto-play video when component mounts
+    if (videoRef.current) {
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.error("Auto-play failed:", error);
+        // Most browsers require user interaction before auto-playing videos with sound
+      });
+      
+      // Add loop attribute
+      videoRef.current.loop = true;
+    }
+  }, []);
   
   const togglePlay = () => {
     if (videoRef.current) {
@@ -35,6 +50,8 @@ const VideoSection = () => {
             ref={videoRef}
             className="w-full aspect-video"
             poster="https://images.unsplash.com/photo-1588099768531-a72d4a198538?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            loop
+            muted
           >
             <source src="https://samplelib.com/lib/preview/mp4/sample-30s.mp4" type="video/mp4" />
             Your browser does not support the video tag.

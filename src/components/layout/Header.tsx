@@ -11,10 +11,12 @@ import {
   ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AuthModal from "@/components/auth/AuthModal";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -83,7 +85,12 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="hover:bg-secondary">
               <Search size={20} />
             </Button>
-            <Button variant="ghost" size="icon" className="hover:bg-secondary relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hover:bg-secondary relative"
+              onClick={() => setAuthModalOpen(true)}
+            >
               <User size={20} />
             </Button>
             <Button variant="ghost" size="icon" className="hover:bg-secondary relative">
@@ -115,6 +122,9 @@ const Header = () => {
           ))}
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </header>
   );
 };
