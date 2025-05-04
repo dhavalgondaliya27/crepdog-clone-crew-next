@@ -6,59 +6,59 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const products = [
   {
-    id: 1,
+    id: "fear-of-god-essentials-hoodie-plum",
+    name: "Fear Of God Essentials Hoodie",
+    price: "$95",
+    image: "https://images.unsplash.com/photo-1556172968-c6b5809b1b55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    category: "streetwear"
+  },
+  {
+    id: "nike-dunk-low-retro",
     name: "Nike Dunk Low Retro",
     price: "$120",
     image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "sneakers"
   },
   {
-    id: 2,
+    id: "air-jordan-4-retro",
     name: "Air Jordan 4 Retro",
     price: "$210",
     image: "https://images.unsplash.com/photo-1584735175315-9d5df23be3dd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "sneakers"
   },
   {
-    id: 3,
+    id: "adidas-yeezy-350",
     name: "Adidas Yeezy 350",
     price: "$230",
     image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "sneakers"
   },
   {
-    id: 4,
+    id: "supreme-box-logo-tee",
     name: "Supreme Box Logo Tee",
     price: "$110",
     image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "streetwear"
   },
   {
-    id: 5,
+    id: "off-white-hoodie",
     name: "Off-White Hoodie",
     price: "$320",
     image: "https://images.unsplash.com/photo-1556172968-c6b5809b1b55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "streetwear"
   },
   {
-    id: 6,
+    id: "essential-fear-of-god-pants",
     name: "Essential Fear of God Pants",
     price: "$95",
     image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "streetwear"
   },
   {
-    id: 7,
+    id: "supreme-shoulder-bag",
     name: "Supreme Shoulder Bag",
     price: "$78",
     image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    category: "accessories"
-  },
-  {
-    id: 8,
-    name: "New Era Yankees Cap",
-    price: "$45",
-    image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     category: "accessories"
   }
 ];
@@ -94,7 +94,11 @@ const FeaturedProducts = () => {
           <TabsContent value={activeTab} className="mt-8">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {filteredProducts.map(product => (
-                <div key={product.id} className="product-card group animate-fade-in">
+                <Link 
+                  to={`/products/${product.id}`}
+                  key={product.id} 
+                  className="product-card group animate-fade-in transition-all duration-300 hover:-translate-y-1"
+                >
                   <div className="relative overflow-hidden">
                     <img
                       src={product.image}
@@ -111,7 +115,7 @@ const FeaturedProducts = () => {
                     <h3 className="font-medium">{product.name}</h3>
                     <p className="text-sm font-bold mt-1">{product.price}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </TabsContent>
