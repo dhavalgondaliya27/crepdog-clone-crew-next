@@ -53,14 +53,6 @@ const VideoSection = () => {
       </div>
       
       <div className="container relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="heading-lg text-white mb-4">Experience Crepdog Crew</h2>
-          <p className="text-gray-300 max-w-2xl mx-auto">
-            Take a look behind the scenes at our authentication process and see how we ensure 
-            every product is 100% authentic.
-          </p>
-        </div>
-        
         <div className="relative max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl">
           <Button
             onClick={togglePlay}

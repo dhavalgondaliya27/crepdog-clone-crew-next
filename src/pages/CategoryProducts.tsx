@@ -1,347 +1,405 @@
 
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
-} from "@/components/ui/pagination";
-import { useState } from "react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { CheckIcon, ChevronDown, FilterX, GridIcon, ListIcon } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-// Mock data for different categories
-const categoryProducts = {
-  sneakers: [
-    {
-      id: "s1",
-      name: "Air Jordan 1 Retro High OG",
-      price: 180,
-      brand: "Nike",
-      images: [
-        "https://images.unsplash.com/photo-1607861716497-e65ab29fc7ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1552346154-21d32810aba3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1621881538090-b2b5ffaa996a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 10",
-    },
-    {
-      id: "s2",
-      name: "Yeezy Boost 350 V2",
-      price: 220,
-      brand: "Adidas",
-      images: [
-        "https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1520096459084-096fcc53fa43?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1552346154-21d32810aba3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 9",
-    },
-    {
-      id: "s3",
-      name: "Nike Dunk Low",
-      price: 100,
-      brand: "Nike",
-      images: [
-        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1606890658317-7d14490b76fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 8",
-    },
-    {
-      id: "s4",
-      name: "New Balance 990v5",
-      price: 175,
-      brand: "New Balance",
-      images: [
-        "https://images.unsplash.com/photo-1539185441755-769473a23570?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1521093470119-a3acdc43374a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 11",
-    },
-    {
-      id: "s5",
-      name: "Converse Chuck Taylor All Star",
-      price: 55,
-      brand: "Converse",
-      images: [
-        "https://images.unsplash.com/photo-1494496195158-c3becb4f2475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1560072810-1cffb09faf0f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 9.5",
-    },
-    {
-      id: "s6",
-      name: "Vans Old Skool",
-      price: 60,
-      brand: "Vans",
-      images: [
-        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1588117305388-c2631a279f82?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "US 10",
-    },
-  ],
-  streetwear: [
-    {
-      id: "st1",
-      name: "Supreme Box Logo Hoodie",
-      price: 450,
-      brand: "Supreme",
-      images: [
-        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "L",
-    },
-    {
-      id: "st2",
-      name: "Off-White Tee",
-      price: 300,
-      brand: "Off-White",
-      images: [
-        "https://images.unsplash.com/photo-1571945153237-4929e783af4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1562157873-818bc0726f68?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "M",
-    },
-    {
-      id: "st3",
-      name: "Essentials Sweatpants",
-      price: 90,
-      brand: "Fear of God",
-      images: [
-        "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1580991584164-a4e12c31ca6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-      size: "M",
-    },
-  ],
-  accessories: [
-    {
-      id: "a1",
-      name: "Supreme Backpack",
-      price: 220,
-      brand: "Supreme",
-      images: [
-        "https://images.unsplash.com/photo-1622560480654-d96214fdc887?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1589363460779-211450dfa908?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-    },
-    {
-      id: "a2",
-      name: "Carhartt WIP Beanie",
-      price: 40,
-      brand: "Carhartt",
-      images: [
-        "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1580657018950-c7f7d6a6d990?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-    },
-    {
-      id: "a3",
-      name: "Off-White Industrial Belt",
-      price: 200,
-      brand: "Off-White",
-      images: [
-        "https://images.unsplash.com/photo-1624222247344-550fb60dae4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1629224316810-9d8805b95e76?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1631541911525-25452452d02f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      ],
-      condition: "New",
-    },
-  ],
-};
+// Define the product type with a size property
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  brand: string;
+  images: string[];
+  condition: string;
+  size: string; // Added size property
+}
 
-// Filter options
-const brands = ["All", "Nike", "Adidas", "New Balance", "Vans", "Converse", "Supreme", "Off-White", "Fear of God", "Carhartt"];
-const sizes = ["All", "US 7", "US 8", "US 9", "US 9.5", "US 10", "US 11", "S", "M", "L", "XL"];
-const conditions = ["All", "New", "Used - Like New", "Used - Good", "Used - Fair"];
+// Mock data for products
+const mockProducts: Product[] = [
+  {
+    id: "1",
+    name: "Nike Air Force 1 '07",
+    price: 110,
+    brand: "Nike",
+    images: [
+      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600269451012-7bac13f6306f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "New",
+    size: "US 10",
+  },
+  {
+    id: "2",
+    name: "Adidas Ultraboost 21",
+    price: 180,
+    brand: "Adidas",
+    images: [
+      "https://images.unsplash.com/photo-1608231387042-66d1773070a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "New",
+    size: "US 9.5",
+  },
+  {
+    id: "3",
+    name: "Jordan 1 Retro High",
+    price: 170,
+    brand: "Jordan",
+    images: [
+      "https://images.unsplash.com/photo-1556906781-9a412961c28c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "New",
+    size: "US 11",
+  },
+  {
+    id: "4",
+    name: "Puma RS-X³",
+    price: 110,
+    brand: "Puma",
+    images: [
+      "https://images.unsplash.com/photo-1608231387042-66d1773070a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "Used",
+    size: "US 10.5",
+  },
+  {
+    id: "5",
+    name: "Converse Chuck Taylor All Star",
+    price: 55,
+    brand: "Converse",
+    images: [
+      "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "New",
+    size: "US 8",
+  },
+  {
+    id: "6",
+    name: "New Balance 990v5",
+    price: 185,
+    brand: "New Balance",
+    images: [
+      "https://images.unsplash.com/photo-1539185441755-769473a23570?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    ],
+    condition: "New",
+    size: "US 9",
+  },
+];
+
+// Category data
+const categories = [
+  { id: "sneakers", name: "Sneakers" },
+  { id: "clothing", name: "Clothing" },
+  { id: "accessories", name: "Accessories" },
+];
 
 const CategoryProducts = () => {
-  const { categoryId } = useParams();
-  const [selectedBrand, setSelectedBrand] = useState("All");
-  const [selectedSize, setSelectedSize] = useState("All");
-  const [selectedCondition, setSelectedCondition] = useState("All");
+  const { categoryId } = useParams<{ categoryId: string }>();
+  const { toast } = useToast();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [priceRange, setPriceRange] = useState<number[]>([0, 500]);
   const [sortBy, setSortBy] = useState("featured");
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   
-  // Get products for the current category
-  const products = categoryProducts[categoryId as keyof typeof categoryProducts] || [];
+  const category = categories.find(cat => cat.id === categoryId);
+  const categoryName = category ? category.name : "Products";
   
-  // Apply filters
-  const filteredProducts = products.filter(product => {
-    const brandMatch = selectedBrand === "All" || product.brand === selectedBrand;
-    const sizeMatch = selectedSize === "All" || product.size === selectedSize;
-    const conditionMatch = selectedCondition === "All" || product.condition === selectedCondition;
-    return brandMatch && sizeMatch && conditionMatch;
-  });
+  const brands = Array.from(new Set(mockProducts.map(product => product.brand)));
+  const conditions = Array.from(new Set(mockProducts.map(product => product.condition)));
   
-  // Apply sorting
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "price-asc") return a.price - b.price;
-    if (sortBy === "price-desc") return b.price - a.price;
-    // Default to featured (no particular order)
-    return 0;
-  });
-
+  useEffect(() => {
+    // Simulate API fetch based on categoryId
+    setProducts(mockProducts);
+  }, [categoryId]);
+  
+  useEffect(() => {
+    // Apply filters and sorting
+    let filtered = [...products];
+    
+    // Filter by brand
+    if (selectedBrands.length > 0) {
+      filtered = filtered.filter(product => selectedBrands.includes(product.brand));
+    }
+    
+    // Filter by condition
+    if (selectedConditions.length > 0) {
+      filtered = filtered.filter(product => selectedConditions.includes(product.condition));
+    }
+    
+    // Filter by price
+    filtered = filtered.filter(product => 
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+    
+    // Apply sorting
+    switch (sortBy) {
+      case "price-asc":
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+        // Here we would sort by date, but since we don't have dates, we'll just reverse
+        filtered.reverse();
+        break;
+      default:
+        // Featured - no specific sort
+        break;
+    }
+    
+    setFilteredProducts(filtered);
+  }, [products, selectedBrands, selectedConditions, priceRange, sortBy]);
+  
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brand)
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand]
+    );
+  };
+  
+  const toggleCondition = (condition: string) => {
+    setSelectedConditions(prev => 
+      prev.includes(condition)
+        ? prev.filter(c => c !== condition)
+        : [...prev, condition]
+    );
+  };
+  
+  const resetFilters = () => {
+    setSelectedBrands([]);
+    setSelectedConditions([]);
+    setPriceRange([0, 500]);
+    setSortBy("featured");
+    
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been cleared.",
+    });
+  };
+  
   return (
     <Layout>
-      <div className="container py-8">
-        <h1 className="text-3xl font-bold capitalize mb-8">{categoryId}</h1>
+      <div className="container py-12">
+        <div className="mb-8">
+          <h1 className="heading-lg mb-2">{categoryName}</h1>
+          <p className="text-gray-500">
+            Explore our collection of authentic {categoryName.toLowerCase()}.
+          </p>
+        </div>
         
-        {/* Filters and Sort */}
-        <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
-          <div className="flex flex-wrap gap-2">
-            {/* Brand Filter */}
-            <div>
-              <select 
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-4 bg-white"
-              >
-                <option disabled>Brand</option>
-                {brands.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-            
-            {/* Size Filter */}
-            <div>
-              <select 
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-4 bg-white"
-              >
-                <option disabled>Size</option>
-                {sizes.map(size => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
-            </div>
-            
-            {/* Condition Filter */}
-            <div>
-              <select 
-                value={selectedCondition}
-                onChange={(e) => setSelectedCondition(e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-4 bg-white"
-              >
-                <option disabled>Condition</option>
-                {conditions.map(condition => (
-                  <option key={condition} value={condition}>{condition}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+        {/* Mobile Filter Toggle */}
+        <div className="lg:hidden mb-6 flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+            className="flex items-center gap-2"
+          >
+            <FilterX className="h-4 w-4" />
+            Filters
+          </Button>
           
-          {/* Sort */}
-          <div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="border border-gray-300 rounded-md py-2 px-4 bg-white"
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={viewMode === "grid" ? "default" : "outline"} 
+              size="icon" 
+              onClick={() => setViewMode("grid")}
+              className="h-8 w-8"
             >
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-            </select>
+              <GridIcon className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant={viewMode === "list" ? "default" : "outline"} 
+              size="icon" 
+              onClick={() => setViewMode("list")}
+              className="h-8 w-8"
+            >
+              <ListIcon className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sortedProducts.map((product) => (
-            <Link 
-              key={product.id} 
-              to={`/products/${product.id}`}
-              className="group"
-            >
-              <div className="bg-gray-100 rounded-lg overflow-hidden aspect-square mb-3 relative">
-                <img 
-                  src={product.images[0]} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {product.images.length > 1 && (
-                  <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                    {product.images.slice(0, 3).map((_, idx) => (
-                      <div 
-                        key={idx}
-                        className={`w-1.5 h-1.5 rounded-full bg-white opacity-75 ${idx === 0 ? 'opacity-100' : ''}`}
-                      ></div>
-                    ))}
-                  </div>
-                )}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Filters sidebar */}
+          <div className={`col-span-1 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
+            <div className="sticky top-24 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Filters</h3>
+                <Button variant="ghost" onClick={resetFilters} className="text-sm hover:underline">
+                  Clear All
+                </Button>
               </div>
-              <h3 className="font-medium text-gray-900 group-hover:text-black transition-colors">{product.name}</h3>
-              <p className="text-gray-500 text-sm mb-1">{product.brand}</p>
-              <div className="flex justify-between items-center">
-                <p className="font-bold">${product.price}</p>
-                {product.size && <span className="text-gray-500 text-sm">{product.size}</span>}
+              
+              {/* Price Range */}
+              <div>
+                <h4 className="font-medium mb-3">Price Range</h4>
+                <div className="mb-2">
+                  <Slider
+                    defaultValue={[0, 500]}
+                    max={500}
+                    step={10}
+                    value={priceRange}
+                    onValueChange={(value) => setPriceRange(value)}
+                    className="my-7"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>${priceRange[0]}</span>
+                  <span>${priceRange[1]}</span>
+                </div>
               </div>
-            </Link>
-          ))}
-        </div>
-        
-        {/* Show "No products found" message if filteredProducts is empty */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-16">
-            <h3 className="text-xl font-medium mb-2">No products found</h3>
-            <p className="text-gray-500 mb-6">Try changing your filters or check back later for new arrivals.</p>
-            <Button variant="outline" onClick={() => {
-              setSelectedBrand("All");
-              setSelectedSize("All");
-              setSelectedCondition("All");
-            }}>Clear Filters</Button>
+              
+              {/* Brands */}
+              <div>
+                <h4 className="font-medium mb-3">Brands</h4>
+                <div className="space-y-2">
+                  {brands.map((brand) => (
+                    <div key={brand} className="flex items-center">
+                      <Checkbox
+                        id={`brand-${brand}`}
+                        checked={selectedBrands.includes(brand)}
+                        onCheckedChange={() => toggleBrand(brand)}
+                      />
+                      <label
+                        htmlFor={`brand-${brand}`}
+                        className="ml-2 text-sm cursor-pointer"
+                      >
+                        {brand}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Condition */}
+              <div>
+                <h4 className="font-medium mb-3">Condition</h4>
+                <div className="space-y-2">
+                  {conditions.map((condition) => (
+                    <div key={condition} className="flex items-center">
+                      <Checkbox
+                        id={`condition-${condition}`}
+                        checked={selectedConditions.includes(condition)}
+                        onCheckedChange={() => toggleCondition(condition)}
+                      />
+                      <label
+                        htmlFor={`condition-${condition}`}
+                        className="ml-2 text-sm cursor-pointer"
+                      >
+                        {condition}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-        
-        {/* Pagination */}
-        {filteredProducts.length > 0 && (
-          <Pagination className="mt-12">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink isActive href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+
+          {/* Products */}
+          <div className="col-span-1 lg:col-span-3">
+            <div className="mb-6 hidden lg:flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="text-sm text-gray-500 mr-4">
+                  {filteredProducts.length} products
+                </span>
+                
+                <Select 
+                  value={sortBy} 
+                  onValueChange={(value) => setSortBy(value)}
+                >
+                  <SelectTrigger className="w-[180px] h-9">
+                    <SelectValue placeholder="Sort By" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant={viewMode === "grid" ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => setViewMode("grid")}
+                  className="h-8 w-8"
+                >
+                  <GridIcon className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant={viewMode === "list" ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => setViewMode("list")}
+                  className="h-8 w-8"
+                >
+                  <ListIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {filteredProducts.length > 0 ? (
+              <div className={
+                viewMode === "grid" 
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
+                  : "space-y-6"
+              }>
+                {filteredProducts.map((product) => (
+                  <Link to={`/products/${product.id}`} key={product.id}>
+                    <Card className={`overflow-hidden transition-all hover:shadow-lg ${
+                      viewMode === "list" ? "flex" : ""
+                    }`}>
+                      <div className={`${viewMode === "list" ? "w-1/3" : "w-full"}`}>
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="h-full w-full object-cover aspect-square"
+                        />
+                      </div>
+                      <div className={`${viewMode === "list" ? "w-2/3" : "w-full"}`}>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-lg mb-1 line-clamp-1">{product.name}</h3>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-500">{product.brand}</span>
+                            <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">{product.size}</span>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="p-4 pt-0 flex justify-between items-center">
+                          <span className="font-semibold">${product.price}</span>
+                          <span className="text-sm text-gray-500">{product.condition}</span>
+                        </CardFooter>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-2">No products found</h3>
+                <p className="text-gray-500">Try adjusting your filters</p>
+                <Button onClick={resetFilters} className="mt-4">Reset Filters</Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </Layout>
   );
