@@ -9,6 +9,8 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import BrandsSection from "@/components/home/BrandsSection";
 import StatsSection from "@/components/home/StatsSection";
+import WhatsHotSection from "@/components/home/WhatsHotSection";
+import VideoFeatureSection from "@/components/home/VideoFeatureSection";
 
 const Index = () => {
   useEffect(() => {
@@ -48,8 +50,10 @@ const Index = () => {
   return (
     <Layout>
       <HeroSection />
+      <WhatsHotSection />
       <StatsSection />
       <FeaturedProducts />
+      <VideoFeatureSection />
       <CategoriesSection />
       <BrandsSection />
       <LegitCheckSection />
