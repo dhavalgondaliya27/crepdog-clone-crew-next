@@ -31,20 +31,6 @@ const Index = () => {
       
       observer.observe(section);
     });
-    
-    // Smooth scroll to sections when navigating
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href');
-        if (targetId && targetId !== '#') {
-          document.querySelector(targetId)?.scrollIntoView({
-            behavior: 'smooth'
-          });
-        }
-      });
-    });
   }, []);
 
   return (

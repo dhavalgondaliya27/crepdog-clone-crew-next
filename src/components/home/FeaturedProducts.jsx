@@ -1,4 +1,3 @@
-
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -381,14 +380,18 @@ const ProductSlider = ({ products, title, category }) => {
   
   const scrollLeft = () => {
     if (sliderRef.current) {
-      const scrollAmount = isMobile ? -280 : -600;
+      // Scroll by exactly 4 items width
+      const itemWidth = isMobile ? 250 : 280;
+      const scrollAmount = -(itemWidth * 4 + 16); // 4 items plus gap
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
   
   const scrollRight = () => {
     if (sliderRef.current) {
-      const scrollAmount = isMobile ? 280 : 600;
+      // Scroll by exactly 4 items width
+      const itemWidth = isMobile ? 250 : 280;
+      const scrollAmount = itemWidth * 4 + 16; // 4 items plus gap
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
@@ -408,20 +411,26 @@ const ProductSlider = ({ products, title, category }) => {
         <div 
           ref={sliderRef} 
           className="flex gap-4 overflow-x-auto pb-8 hide-scrollbar scroll-smooth"
+          style={{ scrollSnapType: 'x mandatory' }}
         >
           {products.map(product => (
             <Link 
               to={`/products/${product.id}`}
               key={product.id} 
               className="flex-none w-[250px] md:w-[280px] product-card group animate-fade-in transition-all duration-300 hover:-translate-y-1"
+              style={{ scrollSnapAlign: 'start' }}
               onMouseEnter={() => setHoveredProductId(product.id)}
               onMouseLeave={() => setHoveredProductId(null)}
             >
               <div className="relative overflow-hidden">
                 <img
-                  src={hoveredProductId === product.id ? product.hoverImage : product.image}
+                  src={hoveredProductId === product.id && product.hoverImage ? product.hoverImage : product.image}
                   alt={product.name}
                   className="product-image h-[200px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    // Fallback image if the product image fails to load
+                    e.target.src = "https://placehold.co/600x400?text=Product+Image";
+                  }}
                 />
                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button variant="secondary" size="sm" className="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
@@ -471,13 +480,20 @@ const FeaturedProducts = () => {
   const sneakers = products.filter(product => product.category === "sneakers");
   const streetwear = products.filter(product => product.category === "streetwear");
   const accessories = products.filter(product => product.category === "accessories");
-  const categoryNavRef = useRef(null);
   
-  const scrollToSection = (categoryId) => {
-    const section = document.getElementById(categoryId);
-    if (section) {
+  // Using a ref instead of state for the section element
+  const sneakersRef = useRef(null);
+  const streetwearRef = useRef(null);
+  const accessoriesRef = useRef(null);
+  
+  // Scroll to the respective section when clicking on category buttons
+  const scrollToSection = (sectionRef) => {
+    if (sectionRef && sectionRef.current) {
+      const yOffset = -100; // Offset to account for header
+      const y = sectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      
       window.scrollTo({
-        top: section.offsetTop - 100,
+        top: y,
         behavior: 'smooth'
       });
     }
@@ -494,24 +510,24 @@ const FeaturedProducts = () => {
           </p>
           
           {/* Category navigation */}
-          <div ref={categoryNavRef} className="flex justify-center mb-12 space-x-4">
+          <div className="flex justify-center mb-12 space-x-4">
             <Button 
               variant="outline" 
-              onClick={() => scrollToSection('sneakers')} 
+              onClick={() => scrollToSection(sneakersRef)} 
               className="border-black hover:bg-black hover:text-white transition-colors"
             >
               Sneakers
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => scrollToSection('streetwear')} 
+              onClick={() => scrollToSection(streetwearRef)} 
               className="border-black hover:bg-black hover:text-white transition-colors"
             >
               Streetwear
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => scrollToSection('accessories')} 
+              onClick={() => scrollToSection(accessoriesRef)} 
               className="border-black hover:bg-black hover:text-white transition-colors"
             >
               Accessories
@@ -519,17 +535,23 @@ const FeaturedProducts = () => {
           </div>
         </div>
         
-        {sneakers.length > 0 && (
-          <ProductSlider products={sneakers} title="Sneakers" category="sneakers" />
-        )}
+        <div ref={sneakersRef}>
+          {sneakers.length > 0 && (
+            <ProductSlider products={sneakers} title="Sneakers" category="sneakers" />
+          )}
+        </div>
         
-        {streetwear.length > 0 && (
-          <ProductSlider products={streetwear} title="Streetwear" category="streetwear" />
-        )}
+        <div ref={streetwearRef}>
+          {streetwear.length > 0 && (
+            <ProductSlider products={streetwear} title="Streetwear" category="streetwear" />
+          )}
+        </div>
         
-        {accessories.length > 0 && (
-          <ProductSlider products={accessories} title="Accessories" category="accessories" />
-        )}
+        <div ref={accessoriesRef}>
+          {accessories.length > 0 && (
+            <ProductSlider products={accessories} title="Accessories" category="accessories" />
+          )}
+        </div>
       </div>
     </section>
   );
