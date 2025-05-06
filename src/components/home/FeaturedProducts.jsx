@@ -337,15 +337,21 @@ const products = [
   }
 ];
 
-// Helper function for product sliders with improved scrolling and progress tracking
+// Improved ProductSlider component with proper sliding functionality
 const ProductSlider = ({ products, title, category }) => {
   const sliderRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
   const [progressWidth, setProgressWidth] = useState(0);
   const [hoveredProductId, setHoveredProductId] = useState(null);
+  const [validProducts, setValidProducts] = useState([]);
   const isMobile = useIsMobile();
   
+  // Filter out products with invalid images
+  useEffect(() => {
+    setValidProducts(products);
+  }, [products]);
+
   useEffect(() => {
     const slider = sliderRef.current;
     
@@ -369,7 +375,7 @@ const ProductSlider = ({ products, title, category }) => {
         window.removeEventListener('resize', calculateMaxScroll);
       };
     }
-  }, []);
+  }, [validProducts]);
   
   useEffect(() => {
     if (maxScroll > 0) {
@@ -380,20 +386,28 @@ const ProductSlider = ({ products, title, category }) => {
   
   const scrollLeft = () => {
     if (sliderRef.current) {
-      // Scroll by exactly 4 items width
-      const itemWidth = isMobile ? 250 : 280;
-      const scrollAmount = -(itemWidth * 4 + 16); // 4 items plus gap
+      // Calculate the width of 4 products for smooth scrolling
+      // Account for gap between items (16px)
+      const itemWidth = 270; // Fixed width for each product
+      const itemGap = 16; // Gap between items
+      const scrollAmount = -(itemWidth * 4 + itemGap * 3); // 4 items plus gaps
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
   
   const scrollRight = () => {
     if (sliderRef.current) {
-      // Scroll by exactly 4 items width
-      const itemWidth = isMobile ? 250 : 280;
-      const scrollAmount = itemWidth * 4 + 16; // 4 items plus gap
+      // Calculate the width of 4 products for smooth scrolling
+      const itemWidth = 270; // Fixed width for each product
+      const itemGap = 16; // Gap between items
+      const scrollAmount = itemWidth * 4 + itemGap * 3; // 4 items plus gaps
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
+  };
+
+  const handleImageError = (productId) => {
+    // Remove product with broken image
+    setValidProducts(prev => prev.filter(p => p.id !== productId));
   };
   
   return (
@@ -413,24 +427,21 @@ const ProductSlider = ({ products, title, category }) => {
           className="flex gap-4 overflow-x-auto pb-8 hide-scrollbar scroll-smooth"
           style={{ scrollSnapType: 'x mandatory' }}
         >
-          {products.map(product => (
+          {validProducts.map(product => (
             <Link 
               to={`/products/${product.id}`}
               key={product.id} 
-              className="flex-none w-[250px] md:w-[280px] product-card group animate-fade-in transition-all duration-300 hover:-translate-y-1"
+              className="flex-none w-[270px] product-card group animate-fade-in transition-all duration-300 hover:-translate-y-1"
               style={{ scrollSnapAlign: 'start' }}
               onMouseEnter={() => setHoveredProductId(product.id)}
               onMouseLeave={() => setHoveredProductId(null)}
             >
-              <div className="relative overflow-hidden">
+              <div className="relative overflow-hidden h-[270px]">
                 <img
                   src={hoveredProductId === product.id && product.hoverImage ? product.hoverImage : product.image}
                   alt={product.name}
-                  className="product-image h-[200px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={(e) => {
-                    // Fallback image if the product image fails to load
-                    e.target.src = "https://placehold.co/600x400?text=Product+Image";
-                  }}
+                  className="h-[270px] w-[270px] object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={() => handleImageError(product.id)}
                 />
                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button variant="secondary" size="sm" className="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
@@ -442,16 +453,19 @@ const ProductSlider = ({ products, title, category }) => {
                 <h3 className="font-medium text-sm line-clamp-1">{product.name}</h3>
                 <div className="mt-2 flex items-center gap-2">
                   <span className="font-bold">{product.price}</span>
-                  <span className="text-gray-500 text-sm line-through">{product.originalPrice}</span>
+                  {product.originalPrice && (
+                    <span className="text-gray-500 text-sm line-through">{product.originalPrice}</span>
+                  )}
                 </div>
               </div>
             </Link>
           ))}
         </div>
         
+        {/* Improved positioning of navigation buttons */}
         <button 
           onClick={scrollLeft} 
-          className="absolute left-2 top-1/3 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-20"
+          className="absolute left-4 top-[135px] -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-20"
           aria-label="Scroll left"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -459,7 +473,7 @@ const ProductSlider = ({ products, title, category }) => {
         
         <button 
           onClick={scrollRight} 
-          className="absolute right-2 top-1/3 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-20"
+          className="absolute right-4 top-[135px] -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-20"
           aria-label="Scroll right"
         >
           <ChevronRight className="w-6 h-6" />
