@@ -9,7 +9,7 @@ const stats = [
 ];
 
 const StatsSection = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef(null);
   
   useEffect(() => {
     const observer = new IntersectionObserver(

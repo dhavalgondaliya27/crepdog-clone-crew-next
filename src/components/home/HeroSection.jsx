@@ -40,7 +40,7 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, [currentSlide]);
   
-  const changeSlide = (index: number) => {
+  const changeSlide = (index) => {
     if (animating) return;
     setAnimating(true);
     setTimeout(() => {

@@ -11,7 +11,7 @@ const brands = [
 ];
 
 const BrandsSection = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
